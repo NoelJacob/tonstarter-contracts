@@ -1,15 +1,17 @@
-// base types defined in https://github.com/newton-blockchain/ton/blob/master/crypto/block/block.tlb
+//
+// dependson "block.tlb"
+//
 
 // storage (according to save_data() contract method)
 
-storage#_ owner_address:MsgAddress counter:uint64
+storage#_ owner_address:MsgAddress counter:uint64 = initData;
 
 // ops
 
-increment query_id:uint64 = InternalMsgBody
+increment query_id:uint64 = InternalMsgBody;
 
-deposit query_id:uint64 = InternalMsgBody
+deposit query_id:uint64 = InternalMsgBody;
 
-withdraw query_id:uint64 withdraw_amount:Grams = InternalMsgBody
+withdraw query_id:uint64 withdraw_amount:Grams = InternalMsgBody;
 
-transfer_ownership query_id:uint64 new_owner_address:MsgAddress = InternalMsgBody
+transfer_ownership query_id:uint64 new_owner_address:MsgAddress = InternalMsgBody;

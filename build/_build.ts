@@ -27,7 +27,7 @@ async function main() {
   try {
     funcVersion = child_process.execSync("func -V").toString();
   } catch (e) {}
-  if (!funcVersion.includes(`Func build information`)) {
+  if (!funcVersion.toLowerCase().includes(`build information`)) {
     console.log(`\nFATAL ERROR: 'func' executable is not found, is it installed and in path?`);
     process.exit(1);
   }
@@ -76,12 +76,12 @@ async function main() {
     if (fs.existsSync(tlbFile)) {
       console.log(` - TL-B file '${tlbFile}' found, calculating crc32 on all ops..`);
       const tlbContent = fs.readFileSync(tlbFile).toString();
-      const tlbOpMessages = tlbContent.match(/^(\w+).*=\s*InternalMsgBody$/gm) ?? [];
+      const tlbOpMessages = tlbContent.matchAll(/(^(\w+).*=\s*InternalMsgBody);$/gm) ?? [];
       for (const tlbOpMessage of tlbOpMessages) {
-        const crc = crc32(tlbOpMessage);
+        const crc = crc32(tlbOpMessage[1]);
         const asQuery = `0x${(crc & 0x7fffffff).toString(16)}`;
         const asResponse = `0x${((crc | 0x80000000) >>> 0).toString(16)}`;
-        console.log(`   op '${tlbOpMessage.split(" ")[0]}': '${asQuery}' as query (&0x7fffffff), '${asResponse}' as response (|0x80000000)`);
+        console.log(`   op '${tlbOpMessage[2]}': '${asQuery}' as query (&0x7fffffff), '${asResponse}' as response (|0x80000000)`);
       }
     } else {
       console.log(` - Warning: TL-B file for contract '${tlbFile}' not found, are your op consts according to standard?`);
@@ -150,11 +150,16 @@ main();
 // helpers
 
 function crc32(r: string) {
-  for (var a, o = [], c = 0; c < 256; c++) {
+  let a,
+    o = [],
+    c = 0;
+  for (; c < 256; c++) {
     a = c;
-    for (var f = 0; f < 8; f++) a = 1 & a ? 3988292384 ^ (a >>> 1) : a >>> 1;
+    for (let f = 0; f < 8; f++) a = 1 & a ? 3988292384 ^ (a >>> 1) : a >>> 1;
     o[c] = a;
   }
-  for (var n = -1, t = 0; t < r.length; t++) n = (n >>> 8) ^ o[255 & (n ^ r.charCodeAt(t))];
+  let n = -1,
+    t = 0;
+  for (; t < r.length; t++) n = (n >>> 8) ^ o[255 & (n ^ r.charCodeAt(t))];
   return (-1 ^ n) >>> 0;
 }

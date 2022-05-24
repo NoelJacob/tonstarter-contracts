@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { Address, Cell, CellMessage, InternalMessage, CommonMessageInfo, WalletContract, SendMode, Wallet } from "ton";
+import { Address, Cell, CellMessage, InternalMessage, CommonMessageInfo, WalletContract, SendMode } from "ton";
 import { SmartContract } from "ton-contract-executor";
 import Prando from "prando";
 
